@@ -19,6 +19,8 @@ Per avviare direttamente il progetto pyplasm:
 $ make open homework=2017-10-23
 ```
 
+---
+
 ### Watch pyplasm project
 ```sh
 make watch file=./path/view.py

@@ -1,6 +1,30 @@
-from larlib import *
+from larlib import \
+    MKPOL,\
+    AA,\
+    LIST,\
+    COMP,\
+    S2,\
+    UKPOL,\
+    S1,\
+    REVERSE,\
+    CAT,\
+    DISTR,\
+    DISTL,\
+    STRUCT,\
+    PROD,\
+    TRANS,\
+    HEX,\
+    Q, \
+    T
 
-def Manhattan2D():
+
+def manhattan2d():
+    """ manhattan2d
+
+    Base of manhattan2d
+
+    :return:
+    """
     verts = [[0, 0], [3, 0], [5, 0], [7, 0], [8, 0], [9.5, 1], [10, 1.5], [0, 3], [3, 3], [5, 3], [7, 3], [8, 3],
              [9.5, 3], [0, 4], [3, 4], [5, 4], [9.5, 4], [12, 4], [9.5, 5], [10, 5], [12, 5], [0, 6], [3, 6], [5, 6],
              [0, 7], [3, 7], [5, 7], [9.5, 7], [12, 7], [9.5, 8], [12, 8], [0, 9], [3, 9], [5, 9], [8, 9], [9, 9],
@@ -22,30 +46,31 @@ def Manhattan2D():
 
     return MKPOL([verts, cells, AA(LIST)(pols)])
 
-def MultExtrude(p, h):
-    MyCells = COMP([ AA(LIST), S2, UKPOL ])(p)
 
-    MyVerts = COMP([S1, UKPOL])(p)
+def multi_extrude(p, h):
+    """ multi_extrude
 
-    ThePolSeq = COMP([ REVERSE, AA(MKPOL), AA(CAT), DISTR])([ DISTL([MyVerts, MyCells ]), [[[1]]] ])
+    Extrudes a complex base to produce a 3D virtual environment.
 
-    return COMP([ STRUCT, AA(PROD), TRANS ])([ ThePolSeq, AA(Q)(h) ])
+    :param p:
+    :param h:
+    :return:
+    """
+    my_cells = COMP([AA(LIST), S2, UKPOL])(p)
+
+    my_verts = COMP([S1, UKPOL])(p)
+
+    the_pol_seq = COMP([REVERSE, AA(MKPOL), AA(CAT), DISTR])([DISTL([my_verts, my_cells]), [[[1]]]])
+
+    return COMP([STRUCT, AA(PROD), TRANS])([the_pol_seq, AA(Q)(h)])
+
 
 GrowingH = range(1, 29)
 
-ManhattanH = [1,3,1,11,1,0.2,1,0.1,1,8,15,1,1,1,1,8,1,15,8,1,2,2,2,2,5,9,1,1,1]
+ManhattanH = [1, 3, 1, 11, 1, 0.2, 1, 0.1, 1, 8, 15, 1, 1, 1, 1, 8, 1, 15, 8, 1, 2, 2, 2, 2, 5, 9, 1, 1, 1]
 
-part1 = HEX("#FF0000")(MultExtrude(Manhattan2D(), GrowingH))
+part_1 = HEX("#FF0000")(multi_extrude(manhattan2d(), GrowingH))
 
-part2 = HEX("#FFFF00")(MultExtrude(Manhattan2D(), ManhattanH))
+part_2 = HEX("#FFFF00")(multi_extrude(manhattan2d(), ManhattanH))
 
-
-VIEW(Manhattan2D())
-
-VIEW(part1)
-
-VIEW(part2)
-
-VIEW(STRUCT([ T([1,2,3])([0, 0, 0])(part1), T([1,2,3])([20, 20, 0])(part2) ] ))
-
-quit()
+part_1_2 = STRUCT([T([1, 2, 3])([0, 0, 0])(part_1), T([1, 2, 3])([20, 20, 0])(part_2)])

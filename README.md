@@ -7,7 +7,7 @@
 
 ## Watch pyplasm project
 ```sh
-make watch file=./path/file.py
+make watch file=./path/view.py
 ```
 
 ### Requirements

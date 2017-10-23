@@ -2,4 +2,4 @@ watch:
 	./bin/watch.sh $(file)
 
 open:
-	jupyter notebook
+	python ./$(homework)/view.py

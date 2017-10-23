@@ -24,7 +24,7 @@ $ make open homework=2017-10-23
 make watch file=./path/view.py
 ```
 
-### Requirements
+#### Requirements
 ```sh
 $ brew install fswatch
 ```

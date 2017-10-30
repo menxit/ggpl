@@ -28,18 +28,16 @@ def armadio(
     larghezza_armadio,
     altezza_armadio,
     profondita_armadio,
-    spessore,
+    spessore_cornice,
     numero_ante,
     numero_ripiani,
-    color,
-    spessore_cornice
+    color
 ):
     """
     permette di creare un armadio parametrizzato.
     :param larghezza_armadio:
     :param altezza_armadio:
     :param profondita_armadio:
-    :param spessore:
     :param numero_ante:
     :param numero_ripiani:
     :param color:
@@ -52,9 +50,9 @@ def armadio(
         :param larghezza_anta:
         :return:
         """
-        cornice = CUBOID([larghezza_anta, altezza_armadio, spessore])
+        cornice = CUBOID([larghezza_anta, altezza_armadio, spessore_cornice])
         vetro = T([1, 2])([spessore_cornice, spessore_cornice])(
-            CUBOID([larghezza_anta - spessore_cornice * 2, altezza_armadio - spessore_cornice * 2, spessore]))
+            CUBOID([larghezza_anta - spessore_cornice * 2, altezza_armadio - spessore_cornice * 2, spessore_cornice]))
         vetro = hex_material("#00EAFF", "#00EAFF", .4)(vetro)
         cornice = HEX(color)(DIFFERENCE([cornice, vetro]))
 
@@ -79,10 +77,10 @@ def armadio(
         """
         if (N == 0):
             return CUBOID([0])
-        return STRUCT(map(lambda i: T(2)((float(altezza_armadio)/(N+1))*(i+1))(ripiano()), range(0, N)))
+        return STRUCT(map(lambda i: T([1, 2])([spessore_cornice, (float(altezza_armadio)/(N+1))*(i+1)])(ripiano()), range(0, N)))
 
     def ripiano():
-        return HEX(color)(CUBOID([larghezza_armadio, spessore, profondita_armadio]))
+        return HEX(color)(CUBOID([larghezza_armadio - (spessore_cornice * 2), spessore_cornice, profondita_armadio]))
 
     def struttura():
         return HEX(color)(DIFFERENCE([
@@ -106,32 +104,34 @@ def composizione_armadio():
         larghezza_armadio=1.2,
         altezza_armadio=2.8,
         profondita_armadio=1.2,
-        spessore=.03,
+        spessore_cornice=.03,
         numero_ante=0,
         numero_ripiani=6,
         color="#2c3e50",
-        spessore_cornice=0.05
     ))
 
     armadio2 = T([1, 2, 3])([1.2, 1.6, 0])(armadio(
         larghezza_armadio=2,
         altezza_armadio=1.2,
         profondita_armadio=.7,
-        spessore=.03,
+        spessore_cornice=.03,
         numero_ante=4,
         numero_ripiani=2,
         color="#34495e",
-        spessore_cornice=0.05
     ))
 
     armadio3 = T([1, 2, 3])([3.2, 1.6, 0])(armadio(
         larghezza_armadio=1,
         altezza_armadio=.6,
         profondita_armadio=.7,
-        spessore=.03,
+        spessore_cornice=.03,
         numero_ante=0,
         numero_ripiani=0,
         color="#2c3e50",
-        spessore_cornice=0.05
     ))
-    return STRUCT([HEX("#c0392b")(CUBOID([6, 3.5])), HEX("#c0392b")(CUBOID([6, 0, 4])), T(1)(1)(STRUCT([armadio1, armadio2, armadio3]))])
+
+    pavimento = HEX("#c0392b")(CUBOID([6, 0, 4]))
+
+    parete = HEX("#c0392b")(CUBOID([6, 3.5]))
+
+    return STRUCT([parete, pavimento, T(1)(1)(STRUCT([armadio1, armadio2, armadio3]))])

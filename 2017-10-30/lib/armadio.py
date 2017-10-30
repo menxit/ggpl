@@ -54,7 +54,15 @@ def armadio(
         vetro = T([1, 2])([spessore_cornice, spessore_cornice])(
             CUBOID([larghezza_anta - spessore_cornice * 2, altezza_armadio - spessore_cornice * 2, spessore_cornice]))
         vetro = hex_material("#00EAFF", "#00EAFF", .4)(vetro)
-        cornice = HEX(color)(DIFFERENCE([cornice, vetro]))
+        cornice = STRUCT([
+            HEX("#f1c40f")(T([1, 2])([spessore_cornice/2, altezza_armadio/3])(DIFFERENCE([
+                T([1, 2, 3])([larghezza_anta - spessore_cornice, spessore_cornice, spessore_cornice])(
+                    CUBOID([spessore_cornice/2, spessore_cornice * 2, spessore_cornice])),
+                T([1, 2, 3])([larghezza_anta - spessore_cornice, spessore_cornice-(spessore_cornice/3), spessore_cornice-(spessore_cornice/3)])(
+                    CUBOID([spessore_cornice/2, spessore_cornice * 2, spessore_cornice])),
+            ]))),
+            HEX(color)(DIFFERENCE([cornice, vetro]))
+        ])
 
         return STRUCT([cornice, vetro])
 
@@ -104,7 +112,7 @@ def composizione_armadio():
         larghezza_armadio=1.2,
         altezza_armadio=2.8,
         profondita_armadio=1.2,
-        spessore_cornice=.03,
+        spessore_cornice=.04,
         numero_ante=0,
         numero_ripiani=6,
         color="#2c3e50",
@@ -114,7 +122,7 @@ def composizione_armadio():
         larghezza_armadio=2,
         altezza_armadio=1.2,
         profondita_armadio=.7,
-        spessore_cornice=.03,
+        spessore_cornice=.04,
         numero_ante=4,
         numero_ripiani=2,
         color="#34495e",
@@ -124,7 +132,7 @@ def composizione_armadio():
         larghezza_armadio=1,
         altezza_armadio=.6,
         profondita_armadio=.7,
-        spessore_cornice=.03,
+        spessore_cornice=.04,
         numero_ante=0,
         numero_ripiani=0,
         color="#2c3e50",

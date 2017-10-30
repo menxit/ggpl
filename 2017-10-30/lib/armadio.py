@@ -81,33 +81,25 @@ def armadio(
             return CUBOID([0])
         return STRUCT(map(lambda i: T(2)((float(altezza_armadio)/(N+1))*(i+1))(ripiano()), range(0, N)))
 
-    def fondo():
-        return HEX(color)(CUBOID([larghezza_armadio, altezza_armadio, spessore]))
-
-    def sopra():
-        return HEX(color)(CUBOID([larghezza_armadio, spessore, profondita_armadio]))
-
-    def sotto():
-        return HEX(color)(T(2)(altezza_armadio - spessore)(sopra()))
-
-    def sinistra():
-        return HEX(color)(CUBOID([spessore, altezza_armadio, profondita_armadio]))
-
-    def destra():
-        return T(1)(larghezza_armadio - spessore)(sinistra())
-
     def ripiano():
         return HEX(color)(CUBOID([larghezza_armadio, spessore, profondita_armadio]))
 
+    def struttura():
+        return HEX(color)(DIFFERENCE([
+            CUBOID([larghezza_armadio, altezza_armadio, profondita_armadio]),
+            T([1, 2, 3])([spessore_cornice, spessore_cornice, spessore_cornice])(CUBOID([
+                larghezza_armadio-(spessore_cornice*2),
+                altezza_armadio-(spessore_cornice*2),
+                profondita_armadio
+            ]))
+        ]))
+
     return STRUCT([
-        fondo(),
         ante(numero_ante),
-        sopra(),
-        sotto(),
-        sinistra(),
-        destra(),
-        ripiani(numero_ripiani)
+        ripiani(numero_ripiani),
+        struttura()
     ])
+
 
 def composizione_armadio():
     armadio1 = T([1, 2, 3])([0, 0, 0])(armadio(

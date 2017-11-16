@@ -9,9 +9,9 @@ def HEMISPHERE(radius):
     """
     def HEMISPHERE1 (subds):
         N, M = subds
-        domain = Plasm.translate( Plasm.power(INTERVALS(PI/2)(N) , INTERVALS(2*PI)(M)), Vecf(0, -PI/2,0 ) )
-        fx = lambda p: radius * math.cos(p[0])  * math.sin  (p[1])
-        fy = lambda p: radius * math.cos(p[0]) * math.cos (p[1])
+        domain = Plasm.translate( Plasm.power(INTERVALS(PI/2)(N), INTERVALS(2*PI)(M)), Vecf(0, -PI/2, 0))
+        fx = lambda p: radius * math.cos(p[0]) * math.sin(p[1])
+        fy = lambda p: radius * math.cos(p[0]) * math.cos(p[1])
         fz = lambda p: radius * math.sin(p[0])
         ret = MAP([fx, fy, fz])(domain)
         return ret

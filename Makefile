@@ -2,4 +2,4 @@ watch:
 	./bin/watch.sh $(file)
 
 open:
-	python ./$(homework)/view.py
+	export PYTHONPATH="${PYTHONPATH}:./utilities"; python $(homework)/view.py

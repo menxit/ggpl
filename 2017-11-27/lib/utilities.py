@@ -22,10 +22,10 @@ def linesToGraph(filePath):
             """
             Effettuo l'approssimazione dei punti delle linee
             """
-            row0 = math.floor(float(row[0]) / 10) * 10
-            row1 = math.floor(float(row[1]) / 10) * 10
-            row2 = math.floor(float(row[2]) / 10) * 10
-            row3 = math.floor(float(row[3]) / 10) * 10
+            row0 = round(float(row[0]) / 10) * 10
+            row1 = round(float(row[1]) / 10) * 10
+            row2 = round(float(row[2]) / 10) * 10
+            row3 = round(float(row[3]) / 10) * 10
 
             if not (row0, row1) in keys.keys():
                 keys[(row0, row1)] = i

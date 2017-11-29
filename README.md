@@ -49,7 +49,6 @@ Per avviare direttamente il progetto pyplasm:
 $ make open homework=2017-11-13
 ```
 
-
 #### [2017-11-20](https://github.com/menxit/ggpl/blob/master/2017-11-20/notebook.ipynb)
 Per avviare il notebook:
 ```sh
@@ -58,6 +57,16 @@ $ jupyter notebook 2017-11-20/notebook.ipynb
 Per avviare direttamente il progetto pyplasm:
 ```sh
 $ make open homework=2017-11-20
+```
+
+#### [2017-11-27](https://github.com/menxit/ggpl/blob/master/2017-11-27/notebook.ipynb)
+Per avviare il notebook:
+```sh
+$ jupyter notebook 2017-11-27/notebook.ipynb
+```
+Per avviare direttamente il progetto pyplasm:
+```sh
+$ make open homework=2017-11-27
 ```
 
 ---

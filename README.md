@@ -7,7 +7,7 @@ Per avviare il notebook:
 ```sh
 $ jupyter notebook YYYY-MM-DD/notebook.ipynb
 ```
-Per avviare direttamente il progetto pyplasm:
+Per avviare il progetto pyplasm:
 ```sh
 $ make open homework=YYYY-MM-DD
 ```

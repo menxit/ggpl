@@ -15,7 +15,7 @@ def planimetria(spessore = 3, h_laterale = 50, h_centrale = 100):
     """
     muri_laterali = []
     muri_centrale = []
-    with open(os.path.join(scriptDir, "../assets/centrale.lines"), "rb") as file:
+    with open(os.path.join(scriptDir, "../assets/laterale.lines"), "rb") as file:
         reader = csv.reader(file, delimiter=",")
         for row in reader:
             row0 = math.floor(float(row[0])/10)*10

@@ -19,6 +19,8 @@ $ make open homework=YYYY-MM-DD
 - [2017-11-13](https://github.com/menxit/ggpl/blob/master/2017-11-13/notebook.ipynb)
 - [2017-11-20](https://github.com/menxit/ggpl/blob/master/2017-11-20/notebook.ipynb)
 - [2017-11-27](https://github.com/menxit/ggpl/blob/master/2017-11-27/notebook.ipynb)
+- [2017-12-04](https://github.com/menxit/ggpl/blob/master/2017-12-04/notebook.ipynb)
+- [2017-12-11](https://github.com/menxit/ggpl/blob/master/2017-12-11/notebook.ipynb)
 
 
 ---

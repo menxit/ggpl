@@ -1,6 +1,23 @@
 from larlib import *
 import os
 import random
+from datetime import date, datetime
+import numpy
+
+def get_season(now):
+    Y = 2000
+    seasons = [(3, (date(Y, 1, 1), date(Y, 3, 20))),
+               (0, (date(Y, 3, 21), date(Y, 6, 20))),
+               (1, (date(Y, 6, 21), date(Y, 9, 22))),
+               (2, (date(Y, 9, 23), date(Y, 12, 20))),
+               (3, (date(Y, 12, 21), date(Y, 12, 31)))]
+    if isinstance(now, datetime):
+        now = now.date()
+    now = now.replace(year=Y)
+    return next(season for season, (start, end) in seasons
+                if start <= now <= end)
+
+SEASON = get_season(date.today())
 
 __dir = os.path.dirname(__file__)
 
@@ -20,10 +37,13 @@ def texture(f, scale_x=1., scale_y=1.):
 def tegole(scale_x=2, scale_y=2):
     return texture("tegole.jpg", scale_x, scale_y)
 
-
 def intonaco():
-    return HEX("#ccc6b1")
+    return texture("intonaco.jpg")
 
+
+def cespugli(depth, height, N):
+    cespuglio = texture("1.jpg")(CUBOID([depth, depth, height]))
+    return STRUCT(map(lambda x : T([2, 3])([x*depth, x*height])(cespuglio), range(0, N)))
 
 def tetto_piramidale(depth, width, height):
     """
@@ -165,8 +185,7 @@ def ripeti(object, times, space=0):
 
 def gorgegous_column(dm, h):
     cylndr = COMP([JOIN, TRUNCONE([dm / 2, .8 * dm / 2, h])])(24)
-    torus_bot = COMP([JOIN, TORUS([dm / 12, dm / 2])])([8, 27])
-    torus_top = COMP([JOIN, TORUS([.8 * (dm / 12), .8 * (dm / 2)])])([8, 24])
+    torus_bot = COMP([JOIN, TORUS([dm / 2,  .7*dm])])([8, 27])
     base = COMP([T([1, 2])([7 * dm / -12, 7 * dm / -23]), CUBOID])(
         [7 * dm / 6, 7 * dm / 6, dm / 6])
     base_top = COMP([T([1, 2])([7 * dm / -12, 7 * dm / -12]), CUBOID])(
@@ -175,7 +194,7 @@ def gorgegous_column(dm, h):
         COMP([JOIN, TRUNCONE([.8 * dm / 2, 1.2 * dm / 2, h / 8])])(4),
         COMP([R([1, 2])(PI / 4), JOIN, TRUNCONE([.8 * dm / 2, 1.2 * dm / 2, h / 8])])(4)
     ])
-    return TOP([TOP([TOP([TOP([TOP([base, torus_bot]), cylndr]), torus_top]), capital]), base_top])
+    return TOP([TOP([TOP([TOP([base, torus_bot]), cylndr]), capital]), base_top])
 
 def tetto_piccolo():
     return STRUCT([
@@ -199,10 +218,10 @@ def steps(steps, width, height, depth):
 
 
 def prato():
-    layer1 = T([1, 2, 3])([-1700, -4000, 0])(texture("prato.jpg", 8, 8)(CUBOID([15000, 10000])))
+    layer1 = T([1, 2, 3])([-1700, -4000, 0])(texture("prato.jpg", 70, 70)(CUBOID([15000, 10000])))
     layer2 = TOP([
         CUBOID([2000, 10000]),
-        CUBOID([15000, 2000]),
+        HEX("#6e6f72")(CUBOID([15000, 2000])),
     ])
     return TOP([layer1, HEX("#b59a5a")(layer2)])
 
@@ -268,52 +287,51 @@ def archs():
     return intonaco()(ripeti(arch_11, 2, 2140))
 
 
-def albero(treeType, rTree, hTree, hTrunk):
-    ambient = [0.0, 0.0, 0.0, 1.0]
-    diffuse = [0.459, 0.27157, 0.0000, 1]
-    specular = [0.0225, 0.0225, 0.0225, 1.0]
-    emission = [0.0, 0.0, 0.0, 1.0]
-    shininess = [12.8]
-    woodMaterial = ambient + diffuse + specular + emission + shininess
-    textureExtended = 'foliage2.jpg'
-    textureNormal = 'foliage.jpg'
+def albero(tipologia, rAlbero, hAlbero, hTronco, stagione = SEASON):
 
-    if treeType == 3:
-        textureExtended = 'flower.jpg'
-        treeType = 2
+    def pattern():
+        probability = [.1, .1, .1, .1]
+        probability[int(stagione)] = .7
+        tipologia = numpy.random.choice(numpy.arange(0, 4), p=probability)
+        return str(tipologia)+'.jpg'
 
-    hFoliage = hTree - hTrunk
-    if treeType == 1:
-        foliage = MKPOL([[[0, 0, 0], [0, rTree, 0], [0, rTree * 1.5 / 4, hFoliage * 1 / 3],
-                          [0, rTree * 3 / 4, hFoliage * 1 / 3], [0, rTree * 1 / 4, hFoliage * 2 / 3],
-                          [0, rTree * 2 / 4, hFoliage * 2 / 3],
-                          [0, 0, hFoliage], [0, 0, hFoliage * 2 / 3], [0, 0, hFoliage * 1 / 3]],
+    if tipologia == 3:
+        tipologia = 2
+
+    hFogliame = hAlbero - hTronco
+    if tipologia == 1:
+        fogliame = MKPOL([[[0, 0, 0], [0, rAlbero, 0], [0, rAlbero * 1.5 / 4, hFogliame * 1 / 3],
+                           [0, rAlbero * 3 / 4, hFogliame * 1 / 3], [0, rAlbero * 1 / 4, hFogliame * 2 / 3],
+                           [0, rAlbero * 2 / 4, hFogliame * 2 / 3],
+                           [0, 0, hFogliame], [0, 0, hFogliame * 2 / 3], [0, 0, hFogliame * 1 / 3]],
                          [[1, 2, 3, 9], [9, 4, 5, 8], [8, 6, 7]], 1])
-        foliage = texture(textureExtended)(foliage)
-        circle1 = texture(textureNormal)(CYLINDER([rTree * 1 / 2, 0])(10))
-        circle2 = texture(textureNormal)(CYLINDER([rTree * 3 / 8, 0])(10))
-        circle3 = texture(textureNormal)(CYLINDER([rTree * 2 / 8, 0])(10))
-        foliage = STRUCT([foliage, circle1, T(3)(hFoliage * 1 / 3), circle2, T(3)(hFoliage * 1 / 3), circle3])
+        fogliame = texture(pattern())(fogliame)
+        c1 = texture(pattern())(CYLINDER([rAlbero * 1 / 2, 0])(10))
+        c2 = texture(pattern())(CYLINDER([rAlbero * 3 / 8, 0])(10))
+        c3 = texture(pattern())(CYLINDER([rAlbero * 2 / 8, 0])(10))
+        fogliame = STRUCT([fogliame, c1, T(3)(hFogliame * 1 / 3), c2, T(3)(hFogliame * 1 / 3), c3])
 
-    elif treeType == 2:
-        foliage = T(3)(rTree * 1 / 2)(R([1, 3])(math.pi / 2)(CYLINDER([rTree * 1 / 2, 0])(20)))
-        foliage = S([2, 3])([2, hFoliage / rTree])(foliage)
-        foliage = texture(textureExtended)(foliage)
-        circle1 = texture(textureExtended)(CYLINDER([rTree * 1 / 2, 0])(10))
-        circle2 = texture(textureExtended)(CYLINDER([rTree * 5 / 6, 0])(10))
-        circle3 = texture(textureExtended)(CYLINDER([rTree * 1 / 2, 0])(10))
-        foliage = STRUCT(
-            [foliage, T(3)(hFoliage * 1 / 4), circle1, T(3)(hFoliage * 1 / 4), circle2, T(3)(hFoliage * 1 / 4),
-             circle3])
+    elif tipologia == 2:
+        fogliame = T(3)(rAlbero * 1 / 2)(R([1, 3])(math.pi / 2)(CYLINDER([rAlbero * 1 / 2, 0])(20)))
+        fogliame = S([2, 3])([2, hFogliame / rAlbero])(fogliame)
+        fogliame = texture(pattern())(fogliame)
+        c1 = texture(pattern())(CYLINDER([rAlbero * 1 / 2, 0])(10))
+        c2 = texture(pattern())(CYLINDER([rAlbero * 5 / 6, 0])(10))
+        c3 = texture(pattern())(CYLINDER([rAlbero * 1 / 2, 0])(10))
+        fogliame = STRUCT(
+            [fogliame, T(3)(hFogliame * 1 / 4), c1, T(3)(hFogliame * 1 / 4), c2, T(3)(hFogliame * 1 / 4),
+             c3])
 
-    foliage = STRUCT([foliage, S(2)(-1), foliage])
+    fogliame = STRUCT([fogliame, S(2)(-1), fogliame])
     i = 0
     while i < 3.14:
         i += 3.14 / 4
-        foliage = STRUCT([foliage, R([1, 2])(i), foliage])
+        fogliame = STRUCT([fogliame, R([1, 2])(i), fogliame])
 
-    trunk = MATERIAL(woodMaterial)(CYLINDER([rTree / 16, hTrunk])(10))
-    tree = STRUCT([trunk, T(3)(hTrunk), foliage])
+    trunk = MATERIAL([
+        0.0, 0.0, 0.0, 1.0, 0.459, 0.27157, 0.0000, 1, 0.0225, 0.0225, 0.0225, 1.0, 0.0, 0.0, 0.0, 1.0,12.8
+    ])(CYLINDER([rAlbero / 16, hTronco])(10))
+    tree = STRUCT([trunk, T(3)(hTronco), fogliame])
 
     return tree
 
@@ -321,17 +339,38 @@ tramezzi_centrale = intonaco()(tramezzi_centrale())
 tramezzi_laterali = intonaco()(tramezzi_laterali())
 tetto_centrale = tegole()(tetto_piramidale(2000, 2150, 400))
 tetti_laterali = tegole(6, 6)(ripeti(tetto_triangolo(4700, 1300), 2, 2150))
-gorgeous_columns = intonaco()(ripeti(gorgegous_column(100, 530), 4, 220))
-scale = texture("steps.jpg", 2, 2)(steps(30, 920, 400, 1000))
+gorgeous_columns = intonaco()(ripeti(gorgegous_column(100., 580.), 4, 220))
+scale = LEFT([
+    RIGHT([
+        texture("steps.jpg", 2, 2)(steps(25, 920, 400, 1000)),
+        texture("1.jpg", 2, 2)(steps(25, 50, 500, 1000))
+    ]),
+    texture("1.jpg", 2, 2)(steps(25, 50, 500, 1000))
+])
 floor = texture("atrio.jpg")(T([1, 2, 3])([4700, 50, 400])(CUBOID([2150, 1950, 1])))
 
+def foresta(stagione=0):
+    def get_random_tree():
+        tipologia = random.randint(1,3)
+        rAlbero = float(300)
+        rAlbero = float(300)
+        hAlbero = float(random.randint(400, 800))
+        hTronco = hAlbero/4
+        return albero(tipologia,rAlbero,hAlbero,hTronco)
 
-foresta = STRUCT([
-    STRUCT(map(lambda x: T([1, 2])([random.randint(-1000,4500), random.randint(2500,5500)])(albero(random.randint(1,3),300.,600.,100.)), range(0, 50))),
-    T(1)(8500)(STRUCT(map(lambda x: T([1, 2])([random.randint(-1000,4500), random.randint(2500,5500)])(albero(random.randint(1,3),300.,600.,100.)), range(0, 50)))),
-    T([1,2])([8500,-6000])(STRUCT(map(lambda x: T([1, 2])([random.randint(-1000, 4500), random.randint(2500, 5500)])(albero(random.randint(1, 3), 300., 600., 100.)), range(0, 50)))),
-    T([1, 2])([0, -6000])(STRUCT(map(lambda x: T([1, 2])([random.randint(-1000, 4500), random.randint(2500, 5500)])(albero(random.randint(1, 3), 300., 600., 100.)), range(0, 50)))),
-])
+    return STRUCT([
+        STRUCT(map(lambda x: T([1, 2])([random.randint(-1000,4500), random.randint(2500,5500)])(get_random_tree()), range(0, 50))),
+        T(1)(8500)(STRUCT(map(lambda x: T([1, 2])([random.randint(-1000,4500), random.randint(2500,5500)])(get_random_tree()), range(0, 50)))),
+        T([1,2])([8500,-6000])(STRUCT(map(lambda x: T([1, 2])([random.randint(-1000, 4500), random.randint(2500, 5500)])(get_random_tree()), range(0, 50)))),
+        T([1, 2])([0, -6000])(STRUCT(map(lambda x: T([1, 2])([random.randint(-1000, 4500), random.randint(2500, 5500)])(get_random_tree()), range(0, 50)))),
+    ])
+
+def torre():
+    l = 700
+    return TOP([
+        intonaco()(CUBOID([l, l, 1200])),
+        tegole()(tetto_piramidale(l, l, 200))
+    ])
 
 VIEW(
     STRUCT([
@@ -349,6 +388,7 @@ VIEW(
         scale,
         floor,
         prato(),
-        foresta,
-]),
+        foresta(1),
+        T(2)(535)(ripeti(torre(), 2, 10147)),
+    ]),
 )

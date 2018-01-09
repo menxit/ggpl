@@ -3,15 +3,7 @@
 
 ### Homeworks
 
-Per avviare il notebook:
-```sh
-$ jupyter notebook YYYY-MM-DD/notebook.ipynb
-```
-Per avviare il progetto pyplasm:
-```sh
-$ make open homework=YYYY-MM-DD
-```
-
+- [PROGETTO FINALE (Villa Emo)](https://github.com/menxit/ggpl/blob/master/0-villa-emo/notebook.ipynb)
 - [2017-10-16](https://github.com/menxit/ggpl/blob/master/2017-10-16/notebook.ipynb)
 - [2017-10-23](https://github.com/menxit/ggpl/blob/master/2017-10-23/notebook.ipynb)
 - [2017-10-30](https://github.com/menxit/ggpl/blob/master/2017-10-30/notebook.ipynb)

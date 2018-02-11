@@ -335,7 +335,24 @@ def albero(tipologia, rAlbero, hAlbero, hTronco, stagione = SEASON):
 
     return tree
 
-tramezzi_centrale = intonaco()(tramezzi_centrale())
+tramezzi_centrale = intonaco()(DIFFERENCE([
+    tramezzi_centrale(),
+    STRUCT([
+
+        # finestra in basso a sinistra
+        T([1, 2, 3])([6450, 1991, 450])(CUBOID([200, 50, 250])),
+
+        # finestra in alto a sinistra
+        T([1, 2, 3])([6450, 1991, 950])(CUBOID([200, 50, 150])),
+
+        # finestra in alto a destra
+        T([1, 2, 3])([4900, 1991, 950])(CUBOID([200, 50, 150])),
+
+        # finestra in basso a destra
+        T([1, 2, 3])([4900, 1991, 450])(CUBOID([200, 50, 250])),
+
+    ])
+]))
 tramezzi_laterali = intonaco()(tramezzi_laterali())
 tetto_centrale = tegole()(tetto_piramidale(2000, 2150, 400))
 tetti_laterali = tegole(6, 6)(ripeti(tetto_triangolo(4700, 1300), 2, 2150))
@@ -372,8 +389,73 @@ def torre():
         tegole()(tetto_piramidale(l, l, 200))
     ])
 
+def porta(spessore, larghezza, altezza, dev = True):
+    if(dev):
+        maniglia = HEX("#FFFF00")(T([2, 3])([larghezza*0.05, altezza * 0.5])(SPHERE(larghezza*0.05)([20, 20])))
+    else:
+        maniglia = HEX("#FFFF00")(T([1, 2, 3])([spessore, larghezza*0.05, altezza * 0.5])(SPHERE(larghezza*0.05)([20, 20])))
+
+    return STRUCT([
+        maniglia,
+        HEX("#8B4513")(CUBOID([spessore, larghezza, altezza])),
+        T([1, 2, 3])([0, larghezza*0.05, altezza*0.05])(HEX("#A0522D")(CUBOID([spessore, larghezza*0.9, altezza*0.9])))
+    ])
+
+def hex_material(color, light, trasparence):
+    """
+    Edits the color and trasparency of the object.
+    :param color:
+    :param light:
+    :param trasparence:
+    :return:
+    """
+    def hex_to_rgb(value):
+        value = value.lstrip('#')
+        lv = len(value)
+        return map(lambda x: x/255., list(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3)))
+
+    # ambientRGBA, diffuseRGBA specularRGBA emissionRGBA shininess
+    params = hex_to_rgb(color) + [.1] + \
+             hex_to_rgb(light) + [trasparence] +\
+             hex_to_rgb(light) + [.1] +\
+             hex_to_rgb("#000000") + [.1] +\
+             [100]
+
+    return MATERIAL(params)
+
+def window(larghezza_laterale, larghezza_centrale, altezza, spessore):
+    def yT(i):
+        if(i%2==0):
+            return 1
+        else:
+            return 0
+    laterale = STRUCT(map(lambda x : HEX("#094707")(T([2, 3])([yT(x)*float(spessore)/3, x*float(altezza)/10])(CUBOID([larghezza_laterale, spessore, float(altezza)/10]))), range(0, 10)))
+    result = LEFT([laterale, hex_material("#000000", "#000000", .4)(CUBOID([larghezza_centrale, spessore, altezza]))])
+    result = LEFT([result, laterale])
+
+    return result
+
 VIEW(
     STRUCT([
+
+        # finestra basso sinistra
+        T([1, 2, 3])([6450+100+50, 1991+50, 450])(window(50, 100, 250, 10)),
+
+        # finestra in alto a sinistra
+        T([1, 2, 3])([6450+100+50, 1991+50, 950])(window(50, 100, 150, 10)),
+
+        # finestra in alto a destra
+        T([1, 2, 3])([4900+100+50, 1991+50, 950])(window(50, 100, 150, 10)),
+
+        # finestra in basso a destra
+        T([1, 2, 3])([4900+100+50, 1991+50, 450])(window(50, 100, 250, 10)),
+
+        # porta sinistra
+        (T([1, 2, 3])([6800, 991, 400])(porta(50, 180, 250))),
+
+        # porta destra
+        (T([1, 2, 3])([4700, 991, 400])(porta(50, 180, 250, False))),
+
         MIDDLE([
             MIDDLE([
                 MIDDLE([
